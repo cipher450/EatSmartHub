@@ -14,6 +14,7 @@ import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
+import { login, getTables,getItems } from './db/routes';
 
 class AppUpdater {
   constructor() {
@@ -29,6 +30,25 @@ ipcMain.on('ipc-example', async (event, arg) => {
   const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
   console.log(msgTemplate(arg));
   event.reply('ipc-example', msgTemplate('pong'));
+});
+
+ipcMain.on('userLogin', async (event, arg) => {
+  const response = await login(arg);
+  event.reply('userLogin', response);
+});
+
+ipcMain.on('tables', async (event, arg) => {
+  const { payload, action } = arg;
+
+  const response = await getTables(action, payload);
+  event.reply('TableList', response);
+});
+
+ipcMain.on('items', async (event, arg) => {
+  const { payload, action } = arg;
+
+  const response = await getItems(action, payload);
+  event.reply('itemsList', response);
 });
 
 if (process.env.NODE_ENV === 'production') {
@@ -78,6 +98,7 @@ const createWindow = async () => {
       preload: app.isPackaged
         ? path.join(__dirname, 'preload.js')
         : path.join(__dirname, '../../.erb/dll/preload.js'),
+      nodeIntegration: true,
     },
   });
 
@@ -91,6 +112,7 @@ const createWindow = async () => {
       mainWindow.minimize();
     } else {
       mainWindow.show();
+      login();
     }
   });
 
@@ -132,6 +154,9 @@ app
       // On macOS it's common to re-create a window in the app when the
       // dock icon is clicked and there are no other windows open.
       if (mainWindow === null) createWindow();
+    });
+    ipcMain.handle('dialog:openFile', () => {
+      console.log('test');
     });
   })
   .catch(console.log);
