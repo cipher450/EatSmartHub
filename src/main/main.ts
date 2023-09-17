@@ -14,7 +14,7 @@ import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
-import { login, getTables,getItems } from './db/routes';
+import { login, getTables,getItems , getCategories,handleOrders,handleOrderItems} from './db/routes';
 
 class AppUpdater {
   constructor() {
@@ -46,11 +46,26 @@ ipcMain.on('tables', async (event, arg) => {
 
 ipcMain.on('items', async (event, arg) => {
   const { payload, action } = arg;
-
   const response = await getItems(action, payload);
   event.reply('itemsList', response);
 });
-
+ipcMain.on('categories', async (event, arg) => {
+  const { payload, action } = arg;
+  const response = await getCategories(action, payload);
+  event.reply('categoriesList', response);
+});
+ipcMain.on('orders', async (event, arg) => {
+  const { payload, action } = arg;
+  const response = await handleOrders(action, payload);
+  event.reply('ordersList', response);
+  console.log(arg,response)
+});
+ipcMain.on('ordersItems', async (event, arg) => {
+  const { payload, action } = arg;
+  const response = await handleOrderItems(action, payload);
+  event.reply('ordersItemsList', response);
+  console.log(arg,response)
+});
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
   sourceMapSupport.install();

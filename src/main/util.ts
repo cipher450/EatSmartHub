@@ -11,3 +11,16 @@ export function resolveHtmlPath(htmlFileName: string) {
   }
   return `file://${path.resolve(__dirname, '../renderer/', htmlFileName)}`;
 }
+export function getFormatedDate(){
+  const currentDate = new Date();
+  const options = {
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+    second: 'numeric',
+    hour12: false, // Use 24-hour format
+  };
+  return currentDate.toLocaleDateString(undefined, options);
+}

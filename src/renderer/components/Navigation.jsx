@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Sidenav, Nav } from 'rsuite';
 import DashboardIcon from '@rsuite/icons/legacy/Dashboard';
 import GroupIcon from '@rsuite/icons/legacy/Group';
@@ -9,6 +9,7 @@ import GearCircleIcon from '@rsuite/icons/legacy/GearCircle';
 
 import POS from './Featuers/POS';
 import Menu from './Featuers/Menu';
+import Dash from './Featuers/Dash';
 export default function Navigation({SetView}) {
   const headerStyles = {
     padding: 20,
@@ -17,6 +18,7 @@ export default function Navigation({SetView}) {
     color: ' #fff',
   };
   const [expanded, setExpanded] = React.useState(true);
+  const [active,SetActive] = useState('1')
   /*
 onMouseEnter={() => setExpanded(true)}
         onMouseLeave={() => setExpanded(false)}
@@ -37,26 +39,43 @@ onMouseEnter={() => setExpanded(true)}
           </div>
         </Sidenav.Header>
         <Sidenav.Body>
-          <Nav activeKey="2">
-            <Nav.Item eventKey="1" icon={<DashboardIcon />}>
+          <Nav activeKey={active}>
+            <Nav.Item active={active==1 && true} eventKey="1" icon={<DashboardIcon />}onClick={()=>{
+              SetActive("1")
+              SetView(<Dash/>
+              )}}>
               Tableau de bord
             </Nav.Item>
-            <Nav.Item eventKey="2" icon={<POSIcon />}  onClick={()=>{SetView(<POS/>)}}>
+            <Nav.Item  active={active==2 && true} eventKey="2" icon={<POSIcon />}  onClick={()=>{
+              SetActive("2")
+              SetView(<POS/>
+              )}}>
               POS
             </Nav.Item>
-            <Nav.Item eventKey="3" icon={<GroupIcon />} onClick={()=>{SetView(<Menu/>)}} >
+            <Nav.Item  active={active==3 && true} eventKey="3" icon={<GroupIcon />} onClick={()=>{
+                SetActive("3")
+              SetView(<Menu/>)
+              }} >
               Gestion du Menu
             </Nav.Item>
-            <Nav.Item eventKey="4" icon={<InventoryIcon />}>
+            <Nav.Item active={active==4 && true} eventKey="4" icon={<InventoryIcon />}  onClick={()=>{
+             SetActive("4")
+            }}>
               Inventaire
             </Nav.Item>
-            <Nav.Item eventKey="5" icon={<GroupIcon />}>
+            <Nav.Item active={active==5 && true} eventKey="5" icon={<GroupIcon />}  onClick={()=>{
+             SetActive("5")
+            }}>
               Gestion du Personnel
             </Nav.Item>
-            <Nav.Item eventKey="6" icon={<KDSIcon />}>
+            <Nav.Item  active={active==6 && true} eventKey="6" icon={<KDSIcon />}  onClick={()=>{
+             SetActive("6")
+            }}>
               KDS
             </Nav.Item>
-            <Nav.Item eventKey="7" icon={<GearCircleIcon />}>
+            <Nav.Item active={active==7 && true} eventKey="7" icon={<GearCircleIcon />}  onClick={()=>{
+             SetActive("7")
+            }}>
               Réglages
             </Nav.Item>
           </Nav>

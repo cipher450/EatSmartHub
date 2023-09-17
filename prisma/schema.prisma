@@ -1,0 +1,93 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:eatSmartHub.db"
+}
+
+model KDS {
+  kds_id   Int     @id @unique(map: "sqlite_autoindex_KDS_1") @default(autoincrement())
+  order_id Int
+  status   String?
+  orders   orders  @relation(fields: [order_id], references: [order_id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model attendance {
+  attendance_id   Int       @id @unique(map: "sqlite_autoindex_attendance_1") @default(autoincrement())
+  employe_id      Int
+  attendance_date String
+  is_present      String
+  employees       employees @relation(fields: [employe_id], references: [employees_id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model categories {
+  category_id Int     @id @unique(map: "sqlite_autoindex_categories_1") @default(autoincrement())
+  name        String  @unique(map: "sqlite_autoindex_categories_2")
+  items       items[]
+}
+
+model employees {
+  employees_id      Int          @id @unique(map: "sqlite_autoindex_employees_1") @default(autoincrement())
+  name              String
+  role              String
+  contact_info      String?
+  daily_rate        Int
+  last_pay_date     String
+  total_days_worked Int?
+  attendance        attendance[]
+}
+
+model items {
+  item_id     Int          @id @unique(map: "sqlite_autoindex_items_1") @default(autoincrement())
+  name        String       @unique(map: "sqlite_autoindex_items_2")
+  category_id Int?
+  price       Int
+  image_url   String?
+  description String?
+  status      Int?
+  categories  categories?  @relation(fields: [category_id], references: [category_id], onDelete: SetNull, onUpdate: NoAction)
+  orderitems  orderitems[]
+}
+
+model orderitems {
+  order_item_id Int    @id @unique(map: "sqlite_autoindex_orderitems_1") @default(autoincrement())
+  order_id      Int
+  item          Int
+  quantity      Int
+  orders        orders @relation(fields: [order_id], references: [order_id], onDelete: NoAction, onUpdate: NoAction)
+  items         items  @relation(fields: [item], references: [item_id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model orders {
+  order_id     Int            @id @unique(map: "sqlite_autoindex_orders_1") @default(autoincrement())
+  table_number Int?
+  order_date   String
+  status       String?
+  KDS          KDS[]
+  orderitems   orderitems[]
+  tablz        tablz?         @relation(fields: [table_number], references: [table_id], onDelete: SetNull, onUpdate: NoAction)
+  transactions transactions[]
+}
+
+model tablz {
+  table_id Int      @id @unique(map: "sqlite_autoindex_tablz_1") @default(autoincrement())
+  number   Int
+  status   String?
+  orders   orders[]
+}
+
+model transactions {
+  transactions_id Int    @id @unique(map: "sqlite_autoindex_transactions_1") @default(autoincrement())
+  order_id        Int
+  payment_amount  Int
+  payment_date    String
+  orders          orders @relation(fields: [order_id], references: [order_id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model users {
+  user_id  Int     @id @unique(map: "sqlite_autoindex_users_1") @default(autoincrement())
+  role     String?
+  password String?
+}

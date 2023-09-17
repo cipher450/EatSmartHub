@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
-import { Button, Input, SelectPicker } from 'rsuite';
+import React, { useEffect, useState } from 'react';
+
+import { Button, Input, SelectPicker, Notification, useToaster } from 'rsuite';
 
 export default function LoginForm({ SetUser }) {
-  const data = ['Admin', 'Caisse' , 'Cuisine'].map((item) => ({
+  const toaster = useToaster();
+  const data = ['Admin', 'Caisse'].map((item) => ({
     label: item,
     value: item,
   }));
@@ -11,9 +13,38 @@ export default function LoginForm({ SetUser }) {
     password: '',
   });
   console.log(UserData);
+   
+  function handleLogin() {
+    if (UserData.password != undefined) {
+      window.electron.ipcRenderer.sendMessage('userLogin', UserData);
+    }
+    window.electron.ipcRenderer.once('userLogin', (arg) => {
+      // eslint-disable-next-line no-console
+      if (arg) {
+        SetUser({
+          role: UserData.role,
+          connected: true,
+        });
+      } else {
+        
+        toaster.push(message, { placement:'topCenter' })
+      }
+    });
+    /*
+  
+   
+  */
+  }
+  const message = (
+    <Notification type={'error'} header={'erreur'}  closable>
+       <span className='text-1xl font-semibold'>Mot de pass incorrect ! </span>
+    </Notification>
+  );
   return (
     <div className="m-auto background1 text-black w-full flex h-screen items-center justify-center ">
-      
+    
+   
+     
       <div className="flex flex-col gap-5 md:w-1/3  lg:w-1/4 m-auto  bg-white p-5 rounded-md">
         <div className="flex flex-col gap-2">
           <div className="flex gap-2">
@@ -25,8 +56,8 @@ export default function LoginForm({ SetUser }) {
             searchable={false}
             onChange={(e) => {
               SetUserData((prevData) => ({
-                ...prevData, // Copy all existing keys and values
-                role: e, // Update the 'role' key
+                ...prevData,
+                role: e,
               }));
             }}
           />
@@ -40,8 +71,8 @@ export default function LoginForm({ SetUser }) {
             value={UserData.password}
             onChange={(e) => {
               SetUserData((prevData) => ({
-                ...prevData, // Copy all existing keys and values
-                password: e, // Update the 'role' key
+                ...prevData,
+                password: e,
               }));
             }}
           />
@@ -52,12 +83,7 @@ export default function LoginForm({ SetUser }) {
           </Button>
           <Button
             className="bg-green-600 text-white hover:bg-green-500 w-full"
-            onClick={() => {
-              SetUser({
-                role: UserData.role,
-                connected: true,
-              });
-            }}
+            onClick={handleLogin}
           >
             Connexion
           </Button>
